@@ -92,6 +92,7 @@ let startRecordingAudio = (userId, track) => {
         formData.append("userId", userId);
         formData.append("roomId", roomId);
 
+        console.log(formData);
         // Upload to backend
         await fetch("https://video-backend-jckn.onrender.com/upload-audio", { method: "POST", body: formData });
     };
