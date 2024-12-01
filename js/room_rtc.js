@@ -21,7 +21,7 @@ if (!roomId) {
 
 let displayName = sessionStorage.getItem("display_name");
 if (!displayName) {
-    window.location = "index.html";
+    window.location = "../index.html";
 }
 
 let localTracks = [];
@@ -233,27 +233,89 @@ let switchToCamera = async () => {
 let leaveStream = async (e) => {
     e.preventDefault();
 
-    document.getElementById("join-btn").style.display = "block";
-    document.getElementsByClassName("stream__actions")[0].style.display = "none";
+    try {
+        console.log("User is leaving the stream...");
 
-    for (let i = 0; i < localTracks.length; i++) {
-        localTracks[i].stop();
-        localTracks[i].close();
+        // Stop and close local tracks
+        if (localTracks.length > 0) {
+            localTracks.forEach((track) => {
+                track.stop();
+                track.close();
+            });
+            localTracks = [];
+        }
+
+        // Unpublish screen tracks if they exist
+        if (localScreenTracks) {
+            await client.unpublish([localScreenTracks]);
+            localScreenTracks = null;
+        }
+
+        // Notify others that the user has left
+        if (channel) {
+            console.log("Sending user_left message to the channel...");
+            await channel.sendMessage({
+                text: JSON.stringify({ type: "user_left", uid }),
+            });
+
+            // Fetch and log remaining members BEFORE leaving the channel
+            try {
+                console.log("Fetching remaining members...");
+                let members = await channel.getMembers();
+                console.log("Remaining members after leave:", members);
+
+                // Check if no members are left and end the meeting
+                if (members.length === 1) {
+                    console.log("No members left. Calling endMeeting...");
+                    await endMeeting();
+                }
+            } catch (getMembersError) {
+                console.warn("Failed to fetch remaining members:", getMembersError.message);
+            }
+
+            // Leave the channel
+            console.log("Leaving the channel...");
+            await channel.leave();
+        }
+
+        // Logout from RTM client
+        console.log("Logging out from RTM client...");
+        await rtmClient.logout();
+
+        console.log("Successfully left the stream. Redirecting to index.html...");
+        window.location.href = "../index.html";
+     // Delay for logs
+    } catch (error) {
+        console.error("Error during leaveStream:", error);
     }
-
-    if (localScreenTracks) {
-        await client.unpublish([localScreenTracks]);
-    }
-
-    document.getElementById(`user-container-${uid}`).remove();
-
-    if (userRecorders[uid]) {
-        userRecorders[uid].stop();
-        delete userRecorders[uid];
-    }
-
-    channel.sendMessage({ text: JSON.stringify({ type: "user_left", uid }) });
 };
+
+
+let endMeeting = async () => {
+    try {
+        // Notify the backend that the meeting has ended
+        console.log('here end meeting')
+        const response = await fetch('https://video-backend-jckn.onrender.com/end-meeting', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ roomId }), // Pass the room ID or meeting ID
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to notify the backend');
+        }
+
+        console.log('Meeting ended successfully on the server.');
+
+        // Redirect to index.html after ending the meeting
+    } catch (error) {
+        console.error('Error ending the meeting:', error);
+    }
+};
+
+
 
 // Event listeners
 document.getElementById("camera-btn").addEventListener("click", toggleCamera);

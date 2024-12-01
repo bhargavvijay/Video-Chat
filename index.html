@@ -1,66 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Room</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='styles/main.css'>
-    <link rel='stylesheet' type='text/css' media='screen' href='styles/lobby.css'>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join or Create Room</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* Button Container */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+    }
+
+    /* Button Styles */
+    .button {
+      background-color: #845695;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 15px 40px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .button:hover {
+      background-color: #9c72b1;
+      transform: translateY(-3px);
+    }
+
+    .button:active {
+      background-color: #73487c;
+      transform: translateY(0);
+    }
+
+    /* Button Icons (Optional) */
+    .button svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+  </style>
 </head>
 <body>
-
-    <header id="nav">
-       <div class="nav--list">
-            <a href="index.html"/>
-                <h3 id="logo">
-                    <img src="./images/logo.png" alt="Site Logo">
-                    <span>Mumble</span>
-                </h3>
-            </a>
-       </div>
-
-        <div id="nav__links">
-            <a class="nav__link" href="/">
-                Lobby
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ede0e0" viewBox="0 0 24 24"><path d="M20 7.093v-5.093h-3v2.093l3 3zm4 5.907l-12-12-12 12h3v10h7v-5h4v5h7v-10h3zm-5 8h-3v-5h-8v5h-3v-10.26l7-6.912 7 6.99v10.182z"/></svg>
-            </a>
-            <a class="nav__link" id="create__room__btn" href="index.html">
-                Create Room
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ede0e0" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 13h-5v5h-2v-5h-5v-2h5v-5h2v5h5v2z"/></svg>
-            </a>
-        </div>
-    </header>
-
-    <main id="room__lobby__container">
-        
-        <div id="form__container">
-             <div id="form__container__header">
-                 <p>👋 Create or Join Room</p>
-             </div>
- 
- 
-            <form id="lobby__form">
- 
-                 <div class="form__field__wrapper">
-                     <label>Your Name</label>
-                     <input type="text" name="name" required placeholder="Enter your display name..." />
-                 </div>
- 
-                 <div class="form__field__wrapper">
-                     <label>Room Name</label>
-                     <input type="text" name="room"  placeholder="Enter room name..." />
-                 </div>
- 
-                 <div class="form__field__wrapper">
-                     <button type="submit">Go to Room 
-                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"/></svg>
-                    </button>
-                 </div>
-            </form>
-        </div>
-     </main>
-    
+  <div class="button-container">
+    <button class="button" id="join_room_btn"   >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 18c-3.313 0-6-2.687-6-6s2.687-6 6-6 6 2.687 6 6-2.687 6-6 6zm0-9.001c-1.657 0-3 1.343-3 3 0 1.656 1.343 3 3 3s3-1.344 3-3c0-1.657-1.343-3-3-3z"/>
+      </svg>
+      Join Room
+    </button>
+    <button class="button" id="create_room_btn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 13h-5v5h-2v-5h-5v-2h5v-5h2v5h5v2z"/>
+      </svg>
+      Create Room
+    </button>
+  </div>
+  <script src="./js/custom.js"></script>
 </body>
-<script type="text/javascript" src="js/lobby.js"></script>
 </html>

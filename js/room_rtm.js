@@ -22,16 +22,42 @@ let addMemberToDom = async (MemberId) => {
 }
 
 let updateMemberTotal = async (members) => {
-    let total = document.getElementById('members__count')
-    total.innerText = members.length
-}
- 
-let handleMemberLeft = async (MemberId) => {
-    removeMemberFromDom(MemberId)
+    let total = document.getElementById('members__count');
+    
+    // Update the member count in the DOM
+    total.innerText = members.length;
+};
 
-    let members = await channel.getMembers()
-    updateMemberTotal(members)
-}
+
+
+
+// const allMembers=async()=>{
+//     const members_usage=await channel.getMembers();
+//     console.log(members_usage);
+// }
+
+// allMembers();
+let handleMemberLeft = async (MemberId) => {
+    console.log(`MemberLeft event received for MemberId: ${MemberId}`);
+
+    // Remove the member from the DOM
+    removeMemberFromDom(MemberId);
+
+    // Wait briefly before fetching updated members
+    setTimeout(async () => {
+        let members = await channel.getMembers();
+        console.log("Updated members after MemberLeft:", members);
+
+        updateMemberTotal(members);
+
+        // Check if no members are left
+        if (members.length === 0) {
+            console.log("No members left. Triggering endMeeting...");
+            await endMeeting();
+        }
+    }, 500); // Short delay for backend to sync
+};
+
 
 let removeMemberFromDom = async (MemberId) => {
     let memberWrapper = document.getElementById(`member__${MemberId}__wrapper`)
@@ -43,10 +69,12 @@ let removeMemberFromDom = async (MemberId) => {
 
 let getMembers = async () => {
     let members = await channel.getMembers()
+    console.log(members);
     updateMemberTotal(members)
     for (let i = 0; members.length > i; i++){
         addMemberToDom(members[i])
     }
+    return members;
 }
 
 let handleChannelMessage = async (messageData, MemberId) => {
