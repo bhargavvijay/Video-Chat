@@ -283,7 +283,7 @@ let leaveStream = async (e) => {
         await rtmClient.logout();
 
         console.log("Successfully left the stream. Redirecting to index.html...");
-        window.location.href = "../index.html";
+        window.location.href = "../pages/view_transcripts.html";
      // Delay for logs
     } catch (error) {
         console.error("Error during leaveStream:", error);
