@@ -28,11 +28,7 @@
             width: 90%;
             max-width: 400px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .header {
             text-align: center;
-            margin-bottom: 20px;
         }
 
         .header h1 {
@@ -47,6 +43,7 @@
 
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
 
         .form-group label {
@@ -66,14 +63,9 @@
             font-size: 1rem;
         }
 
-        .form-group input::placeholder {
-            color: #888;
-        }
-
         .btn {
             display: block;
             width: 100%;
-            text-align: center;
             background-color: #6c63ff;
             color: white;
             padding: 10px;
@@ -88,6 +80,29 @@
         .btn:hover {
             background-color: #5a52d1;
         }
+
+        #transcript-container {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #2a2a2a;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #transcript-container p {
+            color: #f3f3f3;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        #loading {
+            display: none;
+            color: #ffcc00;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -101,9 +116,15 @@
                 <input type="text" id="meeting-id" name="meeting-id" placeholder="Enter the meeting ID...">
             </div>
             <button type="submit" class="btn">View</button>
+            <p id="loading">Fetching transcript...</p>
         </form>
-    </div>
-</body>
-<script type="text/javascript" src="../js/view_transcripts.js"></script>
 
+        <!-- Transcript Display Area -->
+        <div id="transcript-container">
+            <p id="transcript-content"></p>
+        </div>
+    </div>
+
+    <script src="../js/view_transcripts.js"></script>
+</body>
 </html>
