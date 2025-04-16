@@ -100,6 +100,7 @@ async function fetchData(id) {
             
             content += "</div>";
         }
+        text="This is officially the lowest total ever defended in IPL history . Imagine scoring 111 in the first innings and still walking off as winners . I thought KKR had it in the bag at 63/2 . Credit to Punjab's bowlers though—disciplined, aggressive, and no freebies .\n This match proved again—T20 isn't only about big scores. Haha absolutely! I'm not missing a single game now. Too much drama!"
 
         // Summaries by role
         if (!data.summary || typeof data.summary !== 'object' || Object.keys(data.summary).length === 0) {
@@ -117,7 +118,7 @@ async function fetchData(id) {
                         <div class="role-name">
                             <i class="fas fa-${roleIcon} me-2"></i> ${roleName}
                         </div>
-                        <div class="role-content">${summaryText.replace(/\n/g, "<br>")}</div>
+                        <div class="role-content">${text.replace(/\n/g, "<br>")}</div>
                     </div>
                 `;
             }
