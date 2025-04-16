@@ -1,4 +1,4 @@
-// Frontend JavaScript for handling transcripts
+// Frontend JavaScript for handling transcripts and conversation
 const form = document.getElementById('view-transcripts-form');
 const transcriptContainer = document.getElementById('transcript-container');
 const transcriptContent = document.getElementById('transcript-content');
@@ -16,11 +16,65 @@ async function fetchData(id) {
         console.log("API Response:", data); // For debugging
         let content = "";
 
+        // Conversation (back-and-forth dialogue)
+        if (data.conversation) {
+            content += `<div class="section-header"><i class="fas fa-comments"></i> Conversation</div>`;
+            content += `<div class="conversation-container">`;
+            
+            const lines = data.conversation.split('\n');
+            let currentSpeaker = '';
+            let messageGroup = '';
+            
+            lines.forEach(line => {
+                if (!line.trim()) return; // Skip empty lines
+                
+                const parts = line.split(': ');
+                if (parts.length >= 2) {
+                    const speaker = parts[0];
+                    const message = parts.slice(1).join(': ');
+                    
+                    // If speaker changes, create a new message group
+                    if (speaker !== currentSpeaker) {
+                        if (messageGroup) {
+                            content += `<div class="message-group ${currentSpeaker === 'user1' ? 'user1-group' : 'user2-group'}">
+                                <div class="speaker-avatar">
+                                    <i class="fas fa-${currentSpeaker === 'user1' ? 'user' : 'user-tie'}"></i>
+                                </div>
+                                <div class="message-content">
+                                    <div class="speaker-name">${currentSpeaker === 'user1' ? 'Alice' : 'Bob'}</div>
+                                    <div class="messages">${messageGroup}</div>
+                                </div>
+                            </div>`;
+                        }
+                        currentSpeaker = speaker;
+                        messageGroup = `<div class="message">${message}</div>`;
+                    } else {
+                        messageGroup += `<div class="message">${message}</div>`;
+                    }
+                }
+            });
+            
+            // Add the last message group
+            if (messageGroup) {
+                content += `<div class="message-group ${currentSpeaker === 'user1' ? 'user1-group' : 'user2-group'}">
+                    <div class="speaker-avatar">
+                        <i class="fas fa-${currentSpeaker === 'user1' ? 'user' : 'user-tie'}"></i>
+                    </div>
+                    <div class="message-content">
+                        <div class="speaker-name">${currentSpeaker === 'user1' ? 'Alice' : 'Bob'}</div>
+                        <div class="messages">${messageGroup}</div>
+                    </div>
+                </div>`;
+            }
+            
+            content += `</div>`;
+        }
+
         // Multiple Transcripts
         if (!data.transcripts || data.transcripts.length === 0) {
-            content += "<div class='alert alert-warning'><i class='fas fa-exclamation-triangle'></i> No transcripts found for this meeting.</div>";
+            content += "<div class='alert alert-warning mt-4'><i class='fas fa-exclamation-triangle'></i> No transcripts found for this meeting.</div>";
         } else {
-            content += `<div class="section-header"><i class="fas fa-file-alt"></i> Transcripts (${data.transcripts.length})</div>`;
+            content += `<div class="section-header mt-4"><i class="fas fa-file-alt"></i> Transcripts (${data.transcripts.length})</div>`;
             content += "<div class='accordion'>";
             
             data.transcripts.forEach((transcript, index) => {
@@ -32,7 +86,7 @@ async function fetchData(id) {
                         <h2 class="accordion-header" id="transcript-${index}">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
                                     data-bs-target="#collapse-${index}" aria-expanded="false" aria-controls="collapse-${index}">
-                                Transcript ${index + 1}
+                                Transcript ${index + 1} - ${index === 0 ? 'Alice' : 'Bob'}
                             </button>
                         </h2>
                         <div id="collapse-${index}" class="accordion-collapse collapse" aria-labelledby="transcript-${index}">
@@ -55,9 +109,14 @@ async function fetchData(id) {
             content += "<div class='role-summaries'>";
             
             for (const [role, summaryText] of Object.entries(data.summary)) {
+                const roleIcon = role.toLowerCase().includes('moderator') ? 'user-tie' : 'user';
+                const roleName = role.toLowerCase().includes('moderator') ? 'Moderator (Bob)' : 'Attendee (Alice)';
+                
                 content += `
                     <div class="role-summary-card">
-                        <div class="role-name">${role.toUpperCase()}</div>
+                        <div class="role-name">
+                            <i class="fas fa-${roleIcon} me-2"></i> ${roleName}
+                        </div>
                         <div class="role-content">${summaryText.replace(/\n/g, "<br>")}</div>
                     </div>
                 `;
