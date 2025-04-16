@@ -5,31 +5,44 @@ const loadingText = document.getElementById('loading');
 
 async function fetchData(id) {
     try {
-        loadingText.style.display = 'block'; // Show loading text
-        transcriptContainer.style.display = 'none'; // Hide transcript while loading
-        
+        loadingText.style.display = 'block';
+        transcriptContainer.style.display = 'none';
+
         const response = await fetch(`https://video-backend-jckn.onrender.com/meeting-transcript/${id}`);
-        
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const data = await response.json();
+        let content = "";
 
-        // If there's no transcript, show an error
-        if (!data || !data.transcript) {
-            transcriptContent.innerHTML = "⚠️ No transcript found for this meeting.";
+        // Transcript
+        if (!data.transcript) {
+            content += "<p>⚠️ No transcript found for this meeting.</p>";
         } else {
-            transcriptContent.innerHTML = data.transcript.replace(/\n/g, "<br>"); // Format new lines properly
+            content += `<h3>📝 Transcript</h3><p>${data.transcript.replace(/\n/g, "<br>")}</p>`;
         }
 
-        transcriptContainer.style.display = 'block'; // Show transcript
+        // Summaries by role
+        if (!data.summary || Object.keys(data.summary).length === 0) {
+            content += "<p>⚠️ No summaries found.</p>";
+        } else {
+            content += "<h3>📋 Summaries by Role</h3>";
+            for (const [role, summaryText] of Object.entries(data.summary)) {
+                content += `<p><strong>${role.toUpperCase()}:</strong><br>${summaryText.replace(/\n/g, "<br>")}</p>`;
+            }
+        }
+
+        transcriptContent.innerHTML = content;
+        transcriptContainer.style.display = 'block';
+
     } catch (error) {
         console.error('Error:', error);
-        transcriptContent.innerHTML = "⚠️ Error fetching transcript.";
+        transcriptContent.innerHTML = "⚠️ Error fetching data.";
         transcriptContainer.style.display = 'block';
     } finally {
-        loadingText.style.display = 'none'; // Hide loading text after fetching
+        loadingText.style.display = 'none';
     }
 }
+
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
