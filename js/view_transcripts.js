@@ -13,6 +13,7 @@ async function fetchData(id) {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         
         const data = await response.json();
+        console.log("API Response:", data); // For debugging
         let content = "";
 
         // Multiple Transcripts
@@ -23,17 +24,20 @@ async function fetchData(id) {
             content += "<div class='accordion'>";
             
             data.transcripts.forEach((transcript, index) => {
+                // Check if transcript is a string
+                const transcriptText = typeof transcript === 'string' ? transcript : JSON.stringify(transcript);
+                
                 content += `
                     <div class="accordion-item">
-                        <div class="accordion-header" id="transcript-${index}">
+                        <h2 class="accordion-header" id="transcript-${index}">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
                                     data-bs-target="#collapse-${index}" aria-expanded="false" aria-controls="collapse-${index}">
                                 Transcript ${index + 1}
                             </button>
-                        </div>
+                        </h2>
                         <div id="collapse-${index}" class="accordion-collapse collapse" aria-labelledby="transcript-${index}">
                             <div class="accordion-body">
-                                ${transcript.replace(/\n/g, "<br>")}
+                                ${transcriptText.replace(/\n/g, "<br>")}
                             </div>
                         </div>
                     </div>
@@ -44,7 +48,7 @@ async function fetchData(id) {
         }
 
         // Summaries by role
-        if (!data.summary || Object.keys(data.summary).length === 0) {
+        if (!data.summary || typeof data.summary !== 'object' || Object.keys(data.summary).length === 0) {
             content += "<div class='alert alert-warning mt-4'><i class='fas fa-exclamation-triangle'></i> No summaries found.</div>";
         } else {
             content += "<div class='section-header mt-4'><i class='fas fa-list-alt'></i> Role Summaries</div>";
@@ -64,16 +68,6 @@ async function fetchData(id) {
 
         transcriptContent.innerHTML = content;
         transcriptContainer.style.display = 'block';
-        
-        // Initialize Bootstrap accordion (if not automatically handled)
-        if (typeof bootstrap !== 'undefined') {
-            const accordionElements = document.querySelectorAll('.accordion-collapse');
-            accordionElements.forEach(collapse => {
-                new bootstrap.Collapse(collapse, {
-                    toggle: false
-                });
-            });
-        }
 
     } catch (error) {
         console.error('Error:', error);
